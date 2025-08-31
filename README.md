@@ -1,40 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# 📊 ANSD Sénégal – Plateforme de Données et Publications
 
-## Getting Started
+Une application web moderne permettant de gérer et de consulter les publications, études, enquêtes et données ouvertes de l’**ANSD (Agence Nationale de la Statistique et de la Démographie du Sénégal)**.  
+Elle comprend un **frontend Next.js** et un **backend Express/Prisma/PostgreSQL**, avec une authentification par rôles (**Admin** / **Agent**).
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Fonctionnalités principales
+
+- ✅ **Authentification sécurisée** avec JWT (connexion, déconnexion, gestion des rôles)  
+- ✅ **Espace privé** avec tableaux de bord :
+  - **Admin Dashboard** : gestion des utilisateurs (CRUD), paramètres globaux, accès à la gestion des contenus
+  - **Agent Dashboard** : gestion des publications et données  
+- ✅ **Gestion dynamique des publications** : création, modification et téléchargement de documents avec upload de fichiers  
+- ✅ **Portail Open Data** : consultation et filtrage des jeux de données par catégorie, format et région  
+- ✅ **Portail Publications** : catalogue filtrable, publications phares, navigation par catégories  
+- ✅ **Pages thématiques** : Études & Enquêtes, SESN, Actualités  
+- ✅ **Interface moderne** avec **Next.js, Shadcn/UI, TailwindCSS** et un design **glassmorphism**
+
+---
+
+## 🏗️ Architecture
+
+```
+ansd-website/
+│── backend/               # API Express + Prisma
+│   ├── src/
+│   │   ├── app.js         # Point d'entrée serveur
+│   │   ├── routes/        # Routes (auth, users, publications, etc.)
+│   │   ├── controllers/   # Logique métier (authController.js, etc.)
+│   │   ├── middleware/    # Auth middleware (JWT protect)
+│   │   └── utils/         # jwt.js, password.js
+│   ├── prisma/
+│   │   └── schema.prisma  # Modèle de la base de données
+│   └── .env               # Variables d'environnement
+│
+│── src/                   # Frontend Next.js
+│   ├── pages/             # Pages Next.js (index, login, admin, agent, etc.)
+│   ├── components/        # Composants réutilisables (UI, Layout, Dashboards)
+│   ├── context/           # AuthContext.js (gestion auth côté client)
+│   ├── hooks/             # Hooks API (ex: useANSDApi)
+│   └── styles/            # Styles globaux Tailwind
+│
+│── package.json           # Dépendances racine (ou séparées frontend/backend)
+│── README.md              # Documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## ⚙️ Installation & Configuration
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### 1️⃣ Cloner le projet
+```bash
+git clone https://github.com/ton-utilisateur/ansd-website.git
+cd ansd-website
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+### 2️⃣ Backend (Express + Prisma)
+```bash
+cd backend
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Créer un fichier `.env` :
+```env
+DATABASE_URL="postgresql://ansduser:password123@localhost:5432/ansd_db?schema=public"
+JWT_SECRET="changeme_secret"
+```
 
-## Learn More
+Initialiser Prisma :
+```bash
+npx prisma migrate dev --name init
+npx prisma db seed   # si tu as un fichier de seed
+npx prisma studio    # interface de gestion DB
+```
 
-To learn more about Next.js, take a look at the following resources:
+Lancer le serveur backend :
+```bash
+npm run dev
+```
+👉 Par défaut : [http://localhost:5000](http://localhost:5000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3️⃣ Frontend (Next.js)
+```bash
+cd ../
+npm install
+```
 
-## Deploy on Vercel
+Configurer `.env.local` à la racine du frontend :
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Lancer le frontend :
+```bash
+npm run dev
+```
+👉 Par défaut : [http://localhost:3000](http://localhost:3000)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+---
+
+## 👥 Rôles & Authentification
+
+- **Admin** :  
+  - Gérer les utilisateurs (ajout, modification, suppression)  
+  - Accéder à tous les contenus et paramètres  
+
+- **Agent** :  
+  - Créer et gérer les publications  
+  - Accéder à l’espace privé agent  
+
+---
+
+## 📂 Pages principales
+
+- `/` → Accueil  
+- `/login` → Connexion  
+- `/admin` → Tableau de bord Administrateur  
+- `/agent` → Tableau de bord Agent  
+- `/publications` → Catalogue des publications  
+- `/open-data` → Catalogue Open Data  
+- `/sesn` → Situation Économique et Sociale du Sénégal  
+- `/etudes` → Études & Enquêtes  
+
+---
+
+## 🛠️ Technologies utilisées
+
+- **Frontend** : Next.js, React, Shadcn/UI, TailwindCSS, Axios  
+- **Backend** : Node.js, Express, Prisma, JWT, Bcrypt  
+- **Base de données** : PostgreSQL (via Docker ou local)  
+- **Auth** : JWT avec stockage local du token  
+
+---
+
+## 📌 Améliorations futures
+
+- 🔐 Authentification OAuth2 / Keycloak  
+- 📊 Tableau de bord interactif avec graphiques temps réel  
+- 🗄️ Upload avancé (fichiers volumineux, stockage cloud S3/MinIO)  
+- 🌍 Internationalisation (fr/en)  
+
+---
+
+## 👨‍💻 Développement
+
+Lancer backend + frontend en parallèle :
+```bash
+# Terminal 1
+cd backend && npm run dev
+
+# Terminal 2
+npm run dev
+```
+
+---
+
+## 📜 Licence
+
+Ce projet est distribué sous licence MIT. Vous êtes libre de l’utiliser, le modifier et le redistribuer.

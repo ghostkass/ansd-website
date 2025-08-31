@@ -1,0 +1,37 @@
+// backend/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  role      String    @default("agent")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLogin DateTime?
+
+  publications Publication[]
+}
+
+model Publication {
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  type        String
+  fileUrl     String?
+
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id]) 
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+}
